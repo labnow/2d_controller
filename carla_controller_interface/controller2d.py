@@ -6,6 +6,8 @@
 
 import cutils
 import numpy as np
+from ctypes import *
+import pathlib
 
 class Controller2D(object):
     def __init__(self, waypoints):
@@ -163,7 +165,12 @@ class Controller2D(object):
             # Change these outputs with the longitudinal controller. Note that
             # brake_output is optional and is not required to pass the
             # assignment, as the car will naturally slow down over time.
-            throttle_output = 0
+            pwd = pathlib.Path(__file__).parent.resolve()
+            so_file = pwd.parent.resolve() / "pid_contoller" / "pid.so"
+            example_lib = cdll.LoadLibrary(so_file)
+            example_lib.lateral.restype = c_float
+
+            throttle_output = example_lib.throttle()
             brake_output    = 0
 
             ######################################################
